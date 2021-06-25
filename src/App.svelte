@@ -1,21 +1,26 @@
 <script>
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-
   import { createRxDatabase, addRxPlugin, isRxDatabase } from 'rxdb';
   import * as idb from 'pouchdb-adapter-idb';
 
-  import noteSchema from './db/schema';
+	import OmniBar from './OmniBar.svelte';
+  import FileList from './FileList.svelte';
+  import ResizeHandle from './ResizeHandle.svelte';
+
+	import noteSchema from './db/schema';
+
+	import { omniText, noteList, selectedNote } from "./store";
 
   addRxPlugin(idb);
 
-  let title = 'TITLE';
-  let note = 'the body';
+  let note = '';
+
+  let innerHeight;
 
   let db;
-  let noteList = [];
 
-	const debounce = (callback, wait) => {
+  const debounce = (callback, wait) => {
     let timeoutId = null;
     return (...args) => {
       window.clearTimeout(timeoutId);
@@ -25,71 +30,102 @@
     };
   };
 
+  const getDb = () => {
+    if ($omniText !== '') {
+      console.log('$omniText @@@@@@@@@@', $omniText);
+      db.notes
+        .find().where('name').$.subscribe((notes) => {
+          notes && noteList.set(notes);
+      });
+    } else {
+      db.notes
+        .find().$.subscribe((notes) => {
+          notes && noteList.set(notes);
+       });
+    }
+  }
+
+  // $: getSelectedNoteContents = db.notes.findOne({ selector: { guid: selectedNote }});
+
   onMount(async () => {
     db = await createRxDatabase({ name: 'nvaux', adapter: 'idb' });
     await db.addCollections({ notes: { schema: noteSchema } });
 
-    db.notes
-      .find({
-        selector: {},
-        sort: [{ name: 'asc' }],
-      })
-      .$.subscribe((notes) => {
-        if (!notes) {
-          return;
-        }
-        noteList = notes;
-      });
-    // db.$.subscribe((changeEvent) => console.log('DATA', `RxDB changeEvent: ${changeEvent} `, changeEvent));
+    getDb();
+
+    db.$.subscribe((changeEvent) => console.log('DATA', `RxDB changeEvent: ${changeEvent} `, changeEvent));
   });
 
-	const handleSave = debounce((ev) => {
-		console.log('isRxDatabase @@@@@@@@@@', isRxDatabase(db));
-		console.log('noteList @@@@@@@@@@', noteList);
-		const now = new Date();
-		db.notes.upsert({
-			guid: uuidv4(),
-			name: title,
-			body: note,
-			updatedAt: now.toISOString(),
-		});
-	}, 250);
-
-  const deleteNote = async (note) => {
-    await note.remove();
+  const handleSave = (ev) => {
+    // console.log('isRxDatabase @@@@@@@@@@', isRxDatabase(db));
+    // console.log('noteList @@@@@@@@@@', noteList);
+    db.notes.upsert({
+      guid: uuidv4(),
+      name: $omniText,
+      body: note,
+      updatedAt: new Date().toISOString(),
+    });
   };
 
-	const handleTitleEnter = ({ keyCode }) => keyCode === 13 && handleSave();
+	const handleDebounceSave = debounce((ev) => {
+		handleSave();
+  }, 250);
+
+  const handleTitleEnter = ({ keyCode }) => keyCode === 13 && handleSave();
+
+  const handleSelectNote = (guid) => {
+    selectedNote.set(guid);
+    db.notes.findOne({
+      selector: {
+        guid: $selectedNote
+      }
+    }).exec().then(doc => {
+      note = doc.body;
+      omniText.set(doc.name);
+    });
+  };
 
 </script>
 
+<svelte:window bind:innerHeight={innerHeight} />
 
 <div>
-  <div style="width: 340px; border: 1px solid #dddd; padding: 10px;">
-    <label for="title">Title:</label>
-    <input bind:value={title} placeholder="Note Title" on:keydown={handleTitleEnter} />
+	<OmniBar handleSubmit={handleTitleEnter} />
 
-    <label for="note">Note:</label>
-    <textarea name="note" bind:value={note} on:keydown=/>
-
-    <button on:click={handleSave}>Save</button>
+  <div style="height: 200px">
+    <FileList noteList={$noteList} handleSelectNote={handleSelectNote} />
+  </div>
+  <ResizeHandle />
+  <div>
+    {#if $selectedNote}
+      <textarea bind:value={note} on:keydown style={`height: ${innerHeight}px - 55px - 200px`}/>
+    {:else}
+      <h2>No Note Selected</h2>
+    {/if}
   </div>
 
-
-  <ul>
-    {#each noteList as note, i}
-      <li>{i} - {note.name} <button on:click={() => deleteNote(note)}>[del]</button></li>
-    {/each}
-  </ul>
 </div>
 
 <style>
-  label {
-    display: block;
-    width: 100%;
+  :global(body) {
+		margin: 0;
+		padding: 0;
+    background: #f6f6f6;
   }
-  input,
-  textarea {
-    width: 100%;
+  h2 {
+    font-size: 22px;
+    font-weight: normal;
+    margin-top: 10%;
+    color: #a3a3a3;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
   }
+	textarea {
+    width: 100%;
+    padding: 6px;
+    resize: none;
+		box-sizing: border-box;
+		border: none;
+    height: calc(100vh - 260px);
+	}
 </style>
