@@ -20,6 +20,11 @@
 
   let innerHeight;
 
+  let docIsFocused;
+
+  // const checkIfFocused = () => docIsFocused = document.hasFocus();
+  // setInterval(checkIfFocused, 300);
+
   let db;
 
   const debounce = (callback, wait) => {
@@ -74,7 +79,9 @@
 		handleSave();
   }, 250);
 
-  const handleTitleEnter = ({ keyCode }) => {
+  const handleTitleEnter = (e) => {
+    e.preventDefault();
+    const { keyCode } = e;
     keyCode === 13 && handleSave();
     keyCode === 13 && bodyRef.focus();
   };
