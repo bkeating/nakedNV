@@ -8,15 +8,9 @@
 
   let isMouseDown = false;
 
-  const deleteNote = async (note) => {
-    await note.remove();
-  };
-  const formatDate = (str) => format(new Date(2014, 1, 11), 'MM/dd/yyyy hh:mm:ss');
-
-  const handleSelectNoteMouseOver = (guid) => {
-    isMouseDown && handleSelectNote(guid);
-  };
-
+  const deleteNote = async (note) => await note.remove();
+  const formatDate = (str) => format(new Date(str), "MMM d, yyyy 'at' h:mm a");
+  const handleSelectNoteMouseOver = (guid) => isMouseDown && handleSelectNote(guid);
 </script>
 
 <ul
@@ -29,7 +23,7 @@
     on:mouseover={() => handleSelectNoteMouseOver(note.guid)}
     style={$selectedNote === note.guid && 'background: #0363e1; color: white;'}
   >
-    <span>{note.name}</span>
+    <span class="elipsis" on:dblclick={() => alert('double clicked')}>{note.name} {#if note.body !== ''}<span style="color: #757575">—</span>{/if} <span class="mute" style={$selectedNote === note.guid && 'color: #fff;'}>{note.body}</span></span>
     <span class="meta" style={$selectedNote === note.guid && 'background: #0363e1; color: white;'}>
       {formatDate(note.updatedAt)}
       <!-- <button on:click={() => deleteNote(note)}>[del]</button> -->
@@ -66,6 +60,17 @@
 			background: #f0f0f0;
 	}
   .meta {
+    min-width: 140px;
     color: #444444;
+    white-space: nowrap;
+  }
+  .elipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+  }
+  .mute {
+    color: #8d8d8d;
   }
 </style>

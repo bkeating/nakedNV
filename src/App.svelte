@@ -16,6 +16,8 @@
 
   let note = '';
 
+  let bodyRef;
+
   let innerHeight;
 
   let db;
@@ -63,6 +65,7 @@
       guid: uuidv4(),
       name: $omniText,
       body: note,
+      // createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
   };
@@ -71,7 +74,10 @@
 		handleSave();
   }, 250);
 
-  const handleTitleEnter = ({ keyCode }) => keyCode === 13 && handleSave();
+  const handleTitleEnter = ({ keyCode }) => {
+    keyCode === 13 && handleSave();
+    keyCode === 13 && bodyRef.focus();
+  };
 
   const handleSelectNote = (guid) => {
     selectedNote.set(guid);
@@ -98,7 +104,12 @@
   <ResizeHandle />
   <div>
     {#if $selectedNote}
-      <textarea bind:value={note} on:keydown style={`height: ${innerHeight}px - 55px - 200px`}/>
+      <textarea
+        bind:this={bodyRef}
+        bind:value={note}
+        on:keydown={handleDebounceSave}
+        style={`height: ${innerHeight}px - 55px - 200px;`}
+      />
     {:else}
       <h2>No Note Selected</h2>
     {/if}
@@ -113,10 +124,10 @@
     background: #f6f6f6;
   }
   h2 {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: normal;
     margin-top: 10%;
-    color: #a3a3a3;
+    color: #808080;
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
   }
@@ -127,5 +138,6 @@
 		box-sizing: border-box;
 		border: none;
     height: calc(100vh - 260px);
+    outline: none;
 	}
 </style>

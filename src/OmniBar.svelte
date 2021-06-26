@@ -1,7 +1,7 @@
 <script>
   import MdSearch from 'svelte-icons/md/MdSearch.svelte';
   import IoMdCloseCircle from 'svelte-icons/io/IoMdCloseCircle.svelte';
-  import { omniText } from "./store";
+  import { omniText, selectedNote } from "./store";
 
   export let handleSubmit;
 </script>
@@ -13,7 +13,7 @@
       <MdSearch />
     </div>
     {#if $omniText !== ''}
-       <div class="icon right" on:click={() => omniText.set('')}>
+       <div class="icon right" on:click={() => { omniText.set(''); selectedNote.set('') }}>
          <IoMdCloseCircle />
        </div>
     {/if}
