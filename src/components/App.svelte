@@ -1,41 +1,26 @@
 <script>
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import { createRxDatabase, addRxPlugin, isRxDatabase } from 'rxdb';
+  import { createRxDatabase, addRxPlugin } from 'rxdb';
   import * as idb from 'pouchdb-adapter-idb';
 
 	import OmniBar from './OmniBar.svelte';
   import FileList from './FileList.svelte';
   import ResizeHandle from './ResizeHandle.svelte';
+  import NoteEditor from './NoteEditor.svelte';
 
-	import noteSchema from './db/schema';
+	import noteSchema from '../schema';
 
-	import { omniText, noteList, selectedNote } from "./store";
+	import { omniText, noteList, selectedNote, bodyText } from "../store";
+  import debounce from '../utils/debounce';
 
   addRxPlugin(idb);
 
-  let note = '';
-
-  let bodyRef;
-
-  let innerHeight;
-
-  let docIsFocused;
-
+  // let docIsFocused;
   // const checkIfFocused = () => docIsFocused = document.hasFocus();
   // setInterval(checkIfFocused, 300);
 
   let db;
-
-  const debounce = (callback, wait) => {
-    let timeoutId = null;
-    return (...args) => {
-      window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(() => {
-        callback.apply(null, args);
-      }, wait);
-    };
-  };
 
   const getDb = () => {
     if ($omniText !== '') {
@@ -69,7 +54,7 @@
     db.notes.upsert({
       guid: uuidv4(),
       name: $omniText,
-      body: note,
+      body: $bodyText,
       // createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -80,10 +65,8 @@
   }, 250);
 
   const handleTitleEnter = (e) => {
-    e.preventDefault();
-    const { keyCode } = e;
-    keyCode === 13 && handleSave();
-    keyCode === 13 && bodyRef.focus();
+    if ($omniText === '') return;
+    e.keyCode === 13 && handleSave()
   };
 
   const handleSelectNote = (guid) => {
@@ -93,36 +76,17 @@
         guid: $selectedNote
       }
     }).exec().then(doc => {
-      note = doc.body;
+      bodyText.set(doc.body);
       omniText.set(doc.name);
     });
   };
 
 </script>
 
-<svelte:window bind:innerHeight={innerHeight} />
-
-<div>
-	<OmniBar handleSubmit={handleTitleEnter} />
-
-  <div style="height: 200px">
-    <FileList noteList={$noteList} handleSelectNote={handleSelectNote} />
-  </div>
-  <ResizeHandle />
-  <div>
-    {#if $selectedNote}
-      <textarea
-        bind:this={bodyRef}
-        bind:value={note}
-        on:keydown={handleDebounceSave}
-        style={`height: ${innerHeight}px - 55px - 200px;`}
-      />
-    {:else}
-      <h2>No Note Selected</h2>
-    {/if}
-  </div>
-
-</div>
+<OmniBar handleSubmit={handleTitleEnter} />
+<FileList noteList={$noteList} handleSelectNote={handleSelectNote} />
+<ResizeHandle />
+<NoteEditor handleSave={handleDebounceSave} />
 
 <style>
   :global(body) {
@@ -130,21 +94,4 @@
 		padding: 0;
     background: #f6f6f6;
   }
-  h2 {
-    font-size: 18px;
-    font-weight: normal;
-    margin-top: 10%;
-    color: #808080;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-  }
-	textarea {
-    width: 100%;
-    padding: 6px;
-    resize: none;
-		box-sizing: border-box;
-		border: none;
-    height: calc(100vh - 260px);
-    outline: none;
-	}
 </style>

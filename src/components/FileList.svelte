@@ -1,7 +1,7 @@
 <script>
   import { format } from 'date-fns';
 
-  import { selectedNote } from './store';
+  import { selectedNote } from '../store';
 
   export let noteList;
   export let handleSelectNote;
@@ -37,6 +37,7 @@
 		margin: 0;
     padding: 0;
     height: 100%;
+    max-height: 280px;
     width: 100%;
     background: #f7f7f7;
 		overflow-y: auto;

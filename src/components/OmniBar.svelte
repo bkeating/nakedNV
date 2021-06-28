@@ -1,7 +1,7 @@
 <script>
   import MdSearch from 'svelte-icons/md/MdSearch.svelte';
   import IoMdCloseCircle from 'svelte-icons/io/IoMdCloseCircle.svelte';
-  import { omniText, selectedNote } from "./store";
+  import { omniText, selectedNote } from "../store";
 
   export let handleSubmit;
 </script>

@@ -1,7 +1,14 @@
 {
-  "name": "svelte-app",
+  "name": "nakednv",
   "version": "1.0.0",
   "private": true,
+  "description": "A barebones web-based imitation of nvALT",
+  "license": "BSD-4-Clause",
+  "author": {
+    "name": "Ben Keating",
+    "email": "ben@abstractly.io",
+    "url": "https://benjaminkeating.com/"
+  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
