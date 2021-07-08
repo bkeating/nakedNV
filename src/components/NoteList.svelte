@@ -4,16 +4,17 @@
 
   import { selectedNote, bodyText, db, omniText } from '../store';
 
+  let db$;
   let isMouseDown = false;
   let noteList = [];
 
   onMount(() => {
     const getNoteList = async () => {
-      const db$ = await db();
-      db$.notes.find()
-        .sort({updatedAt: 'desc'})
-        .$
-        .subscribe((notes) => (noteList = notes));
+      db$ = await db();
+      db$.notes
+        .find()
+        .sort({ updatedAt: 'desc' })
+        .$.subscribe((notes) => (noteList = notes));
     };
     getNoteList();
   });
@@ -22,19 +23,18 @@
   const formatDate = (str) => format(new Date(str).getTime(), "MMM d, yyyy 'at' h:mm a");
   const handleSelectNoteMouseOver = (id) => isMouseDown && handleSelectNote(id);
 
-  const handleSelectNote = (id) => {
-    selectedNote.set(id);
-    let db$ = db();
+  const handleSelectNote = (note) => {
+    selectedNote.set(note);
     db$.notes
       .findOne({
         selector: {
-          id: $selectedNote,
+          name: $selectedNote.name,
         },
       })
       .exec()
       .then((n) => {
-        bodyText.set(n.body);
         omniText.set(n.name);
+        bodyText.set(n.body);
       });
   };
 </script>
@@ -45,18 +45,21 @@
   {:then results}
     {#each results as note}
       <li
-        on:click={() => handleSelectNote(note.id)}
-        on:mouseover={() => handleSelectNoteMouseOver(note.id)}
-        style={$selectedNote === note.id && 'background: #0363e1; color: white;'}
+        on:click={() => handleSelectNote(note)}
+        on:mouseover={() => handleSelectNoteMouseOver(note)}
+        style={$selectedNote === note && 'background: #0363e1; color: white;'}
       >
-        <span class="elipsis" on:dblclick={() => alert('double clicked')}
-          >{note.name}
+        <span class="elipsis" on:dblclick={() => alert('double clicked')}>
+          {note.name}
           {#if note.body !== ''}<span style="color: #757575">—</span>{/if}
-          <span class="mute" style={$selectedNote === note.id && 'color: #fff;'}>{note.body}</span></span
-        >
-        <span class="meta" style={$selectedNote === note.id && 'background: #0363e1; color: white;'}>
+          <span class="mute" style={$selectedNote === note && 'color: #fff;'}>
+            {note.body ?? ''}
+          </span>
+        </span>
+
+        <span class="meta" style={$selectedNote === note && 'background: #0363e1; color: white;'}>
           {formatDate(note.updatedAt)}
-          <!-- <button on:click={() => deleteNote(note)}>[del]</button> -->
+          <button on:click={() => deleteNote(note)}>[del]</button>
         </span>
       </li>
     {/each}

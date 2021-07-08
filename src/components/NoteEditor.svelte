@@ -4,13 +4,14 @@
 
   let innerHeight;
 
-  const handleDebounceSave = debounce(() => updateNote, 250);
+  const handleDebounceSave = debounce(() => updateNote(), 230);
 
   const updateNote = async () => {
-    const db$ = await db();
-    await db$.notes.insert({
-      body: $bodyText,
-      updatedAt: new Date().toISOString()
+    await $selectedNote.update({
+      $set: {
+        body: $bodyText,
+        updatedAt: new Date().getTime()
+      }
     });
   };
 </script>
