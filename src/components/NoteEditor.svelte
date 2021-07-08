@@ -1,7 +1,18 @@
 <script>
   import { selectedNote, bodyText } from "../store";
-  export let handleSave;
+  import debounce from '../utils/debounce';
+
   let innerHeight;
+
+  const handleDebounceSave = debounce(() => updateNote, 250);
+
+  const updateNote = async () => {
+    const db$ = await db();
+    await db$.notes.insert({
+      body: $bodyText,
+      updatedAt: new Date().toISOString()
+    });
+  };
 </script>
 
 <svelte:window bind:innerHeight={innerHeight} />
@@ -9,8 +20,8 @@
 {#if $selectedNote}
   <textarea
     id="body-textarea"
-     bind:value={$bodyText}
-    on:keydown={handleSave}
+    bind:value={$bodyText}
+    on:keydown={handleDebounceSave}
     style={`height: ${innerHeight}px - 55px - 200px;`}
   />
 {:else}

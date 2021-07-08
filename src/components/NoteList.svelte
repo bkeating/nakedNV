@@ -1,0 +1,108 @@
+<script>
+  import { onMount } from 'svelte';
+  import { format } from 'date-fns';
+
+  import { selectedNote, bodyText, db, omniText } from '../store';
+
+  let isMouseDown = false;
+  let noteList = [];
+
+  onMount(() => {
+    const getNoteList = async () => {
+      const db$ = await db();
+      db$.notes.find()
+        .sort({updatedAt: 'desc'})
+        .$
+        .subscribe((notes) => (noteList = notes));
+    };
+    getNoteList();
+  });
+
+  const deleteNote = async (note) => await note.remove();
+  const formatDate = (str) => format(new Date(str).getTime(), "MMM d, yyyy 'at' h:mm a");
+  const handleSelectNoteMouseOver = (id) => isMouseDown && handleSelectNote(id);
+
+  const handleSelectNote = (id) => {
+    selectedNote.set(id);
+    let db$ = db();
+    db$.notes
+      .findOne({
+        selector: {
+          id: $selectedNote,
+        },
+      })
+      .exec()
+      .then((n) => {
+        bodyText.set(n.body);
+        omniText.set(n.name);
+      });
+  };
+</script>
+
+<ul on:mousedown={() => (isMouseDown = true)} on:mouseup={() => (isMouseDown = false)}>
+  {#await noteList}
+    Loading Notes...
+  {:then results}
+    {#each results as note}
+      <li
+        on:click={() => handleSelectNote(note.id)}
+        on:mouseover={() => handleSelectNoteMouseOver(note.id)}
+        style={$selectedNote === note.id && 'background: #0363e1; color: white;'}
+      >
+        <span class="elipsis" on:dblclick={() => alert('double clicked')}
+          >{note.name}
+          {#if note.body !== ''}<span style="color: #757575">—</span>{/if}
+          <span class="mute" style={$selectedNote === note.id && 'color: #fff;'}>{note.body}</span></span
+        >
+        <span class="meta" style={$selectedNote === note.id && 'background: #0363e1; color: white;'}>
+          {formatDate(note.updatedAt)}
+          <!-- <button on:click={() => deleteNote(note)}>[del]</button> -->
+        </span>
+      </li>
+    {/each}
+  {/await}
+</ul>
+
+<style>
+  ul {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    max-height: 280px;
+    width: 100%;
+    background: #f7f7f7;
+    overflow-y: auto;
+    overflow-x: hidden;
+    list-style-type: none;
+    border-top: 1px solid #8b8b8b;
+    border-bottom: none;
+    user-select: none;
+  }
+  li {
+    padding: 1px 8px;
+    display: flex;
+    font-size: 12px;
+    justify-content: space-between;
+    font-family: Helvetica, sans-serif;
+  }
+  li:nth-child(odd) {
+    background: #f5f5f5;
+  }
+  li:nth-child(even) {
+    background: #f0f0f0;
+  }
+  .meta {
+    min-width: 140px;
+    color: #444444;
+    white-space: nowrap;
+  }
+  .elipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+  }
+  .mute {
+    color: #8d8d8d;
+  }
+</style>
