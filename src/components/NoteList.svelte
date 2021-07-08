@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { format } from 'date-fns';
 
-  import { selectedNote, bodyText, db, omniText } from '../store';
+  import { selectedNote, bodyText, db, omniText, omniMode, noteListHeight } from '../store';
 
   let db$;
   let isMouseDown = false;
@@ -19,7 +19,7 @@
     getNoteList();
   });
 
-  const deleteNote = async (note) => await note.remove();
+  // const deleteNote = async (note) => await note.remove();
   const formatDate = (str) => format(new Date(str).getTime(), "MMM d, yyyy 'at' h:mm a");
   const handleSelectNoteMouseOver = (id) => isMouseDown && handleSelectNote(id);
 
@@ -33,13 +33,14 @@
       })
       .exec()
       .then((n) => {
+        omniMode.set('edit');
         omniText.set(n.name);
         bodyText.set(n.body);
       });
   };
 </script>
 
-<ul on:mousedown={() => (isMouseDown = true)} on:mouseup={() => (isMouseDown = false)}>
+<ul on:mousedown={() => (isMouseDown = true)} on:mouseup={() => (isMouseDown = false)} style="height: {$noteListHeight}px">
   {#await noteList}
     Loading Notes...
   {:then results}
@@ -59,7 +60,7 @@
 
         <span class="meta" style={$selectedNote === note && 'background: #0363e1; color: white;'}>
           {formatDate(note.updatedAt)}
-          <button on:click={() => deleteNote(note)}>[del]</button>
+          <!-- <button on:click={() => deleteNote(note)}>[del]</button> -->
         </span>
       </li>
     {/each}
@@ -70,19 +71,16 @@
   ul {
     margin: 0;
     padding: 0;
-    height: 100%;
-    max-height: 280px;
     width: 100%;
     background: #f7f7f7;
     overflow-y: auto;
     overflow-x: hidden;
     list-style-type: none;
-    border-top: 1px solid #8b8b8b;
     border-bottom: none;
     user-select: none;
   }
   li {
-    padding: 1px 8px;
+    padding: 2px 8px;
     display: flex;
     font-size: 12px;
     justify-content: space-between;

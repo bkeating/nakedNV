@@ -1,7 +1,9 @@
+<svelte:window on:keydown={clearSelection}/>
+
 <script>
   import { onMount } from 'svelte';
   import FaSearch from 'svelte-icons/fa/FaSearch.svelte';
-  import FaPencilAlt from 'svelte-icons/fa/FaPencilAlt.svelte'
+  import FaPencilAlt from 'svelte-icons/fa/FaPencilAlt.svelte';
   import IoMdCloseCircle from 'svelte-icons/io/IoMdCloseCircle.svelte';
 
   import { omniMode, omniText, selectedNote, db } from '../store';
@@ -13,6 +15,8 @@
     // due to a Google Chrome security limitation.
     omniInput.focus();
   });
+
+  const clearSelection = (e) => e.keyCode === 27 && omniText.set('');
 
   const handleTitleEnter = (e) => {
     if ($omniText === '') return;
@@ -26,16 +30,17 @@
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime(),
     });
-
+    omniMode.set('edit');
   };
 </script>
+
 
 <div class="omnibar">
   <h1>nakedNV</h1>
   <div class="input-wrapper">
     <div class="icon left">
       {#if $omniMode === 'search'}
-         <FaSearch />
+        <FaSearch />
       {:else}
         <FaPencilAlt />
       {/if}
@@ -51,8 +56,13 @@
         <IoMdCloseCircle />
       </div>
     {/if}
-    <!-- svelte-ignore a11y-autofocus -->
-    <input bind:value={$omniText} on:keydown={handleTitleEnter} placeholder="Search or Create" bind:this={omniInput} />
+    <input
+      bind:this={omniInput}
+      bind:value={$omniText}
+      on:keydown={handleTitleEnter}
+      on:focus={omniInput.select()}
+      placeholder="Search or Create"
+    />
   </div>
 </div>
 
@@ -64,10 +74,13 @@
     font-family: sans-serif;
     margin: 1px 0 0 0;
     color: #636363;
+    user-select: none;
   }
   .omnibar {
-    padding: 3px 3px 0 3px;
-    height: 50px;
+    box-sizing: border-box;
+    padding: 4px 3px 0 3px;
+    height: 56px;
+    border-bottom: 1px solid #8b8b8b;
     background: linear-gradient(0deg, rgba(206, 206, 207, 1) 0%, rgba(228, 227, 229, 1) 100%);
   }
   .input-wrapper {
@@ -85,9 +98,9 @@
     position: absolute;
     width: 12px;
     height: 12px;
+    color: #585858;
   }
   .left {
-    color: #3b3b3b;
     top: 7px;
     left: 10px;
   }

@@ -1,50 +1,60 @@
 <script>
-  import { selectedNote, bodyText } from "../store";
-  import debounce from '../utils/debounce';
+  import { selectedNote, bodyText, noteListHeight } from '../store';
+  import { debounce } from '../utils/debounce';
+  import { isEmptyObject } from '../utils/isEmptyObjecy';
 
   let innerHeight;
 
-  const handleDebounceSave = debounce(() => updateNote(), 230);
+  $: noteEditorHeightOffset = 80 + $noteListHeight;
+
+  const handleDebounceSave = debounce(() => !isEmptyObject($selectedNote) && updateNote(), 230);
 
   const updateNote = async () => {
     await $selectedNote.update({
       $set: {
         body: $bodyText,
-        updatedAt: new Date().getTime()
-      }
+        updatedAt: new Date().getTime(),
+      },
     });
   };
 </script>
 
-<svelte:window bind:innerHeight={innerHeight} />
+<svelte:window bind:innerHeight />
 
-{#if $selectedNote}
-  <textarea
-    id="body-textarea"
-    bind:value={$bodyText}
-    on:keydown={handleDebounceSave}
-    style={`height: ${innerHeight}px - 55px - 200px;`}
-  />
-{:else}
-  <h2>No Note Selected</h2>
-{/if}
+<div class="flex" style={`height: ${innerHeight - noteEditorHeightOffset}px;`}>
+  {#if $selectedNote}
+    <textarea bind:value={$bodyText} on:keydown={handleDebounceSave} />
+  {:else}
+    <div class="placeholder">
+      <h2>No Note Selected</h2>
+    </div>
+  {/if}
+</div>
 
 <style>
+  .flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   h2 {
     font-size: 18px;
     font-weight: normal;
-    margin-top: 10%;
     color: #808080;
-    text-align: center;
     font-family: Arial, Helvetica, sans-serif;
   }
-	textarea {
+  textarea {
     width: 100%;
+    height: 100%;
     padding: 6px;
+    background: #f6f6f6;
     resize: none;
-		box-sizing: border-box;
-		border: none;
-    height: calc(100vh - 260px);
+    border: none;
     outline: none;
-	}
+    box-sizing: border-box;
+  }
+  .placeholder {
+    position: relative;
+    top: -20%;
+  }
 </style>
