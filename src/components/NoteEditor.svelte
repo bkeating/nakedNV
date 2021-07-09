@@ -50,8 +50,8 @@
     width: 100%;
     height: 100%;
     padding: 6px;
-    background: #f6f6f6;
-    /* background-color: red; */
+    /* background: #f6f6f6; */
+    background-color: red;
     resize: none;
     border: none;
     outline: none;
