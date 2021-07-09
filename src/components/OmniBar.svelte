@@ -23,14 +23,16 @@
     e.keyCode === 13 && addNote();
   };
 
-  const addNote = async () => {
+   const addNote = async () => {
     const db$ = await db();
     await db$.notes.insert({
       name: $omniText,
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime(),
-    });
-    omniMode.set('edit');
+    }).then((note) => {
+      selectedNote.set(note)
+      omniMode.set('edit');
+    }).then(() => document.getElementById('body-editor').focus());
   };
 </script>
 

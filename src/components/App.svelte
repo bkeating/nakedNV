@@ -11,9 +11,17 @@
 <NoteEditor />
 
 <style>
+  :global(html) {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
   :global(body) {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     background: #f6f6f6;
   }
 </style>

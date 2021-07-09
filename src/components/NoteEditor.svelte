@@ -21,9 +21,9 @@
 
 <svelte:window bind:innerHeight />
 
-<div class="flex" style={`height: ${innerHeight - noteEditorHeightOffset}px;`}>
+<div class="flex" style="height: {innerHeight - noteEditorHeightOffset}px">
   {#if $selectedNote}
-    <textarea bind:value={$bodyText} on:keydown={handleDebounceSave} />
+    <textarea id="body-editor" bind:value={$bodyText} on:keydown={handleDebounceSave} />
   {:else}
     <div class="placeholder">
       <h2>No Note Selected</h2>
@@ -33,6 +33,7 @@
 
 <style>
   .flex {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,10 +45,13 @@
     font-family: Arial, Helvetica, sans-serif;
   }
   textarea {
+    position: relative;
+    display: block;
     width: 100%;
     height: 100%;
     padding: 6px;
     background: #f6f6f6;
+    /* background-color: red; */
     resize: none;
     border: none;
     outline: none;
