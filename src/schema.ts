@@ -12,7 +12,7 @@ const noteSchema = {
   properties: {
     name: {
       type: 'string',
-      primary: true
+      // primary: true
     },
     type: {
       type: 'string'
