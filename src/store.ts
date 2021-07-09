@@ -42,7 +42,8 @@ omniText.subscribe(v => {
   if (v === '') {
     omniMode.set('search');
     selectedNote.set('')
+    // TODO: scroll to top of NoteList
   }
 });
 
-noteListHeight.subscribe(v => localStorage.setItem('noteListHeight', v));
+noteListHeight.subscribe(v => localStorage.setItem('noteListHeight', v.toString()));
