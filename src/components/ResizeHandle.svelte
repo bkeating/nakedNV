@@ -13,18 +13,16 @@
   }
 
   const handleResize = (e) => {
-    console.log('e @@@@@@@@@@', e);
     if (!dragging) return;
-    noteListHeight.set(e.pageY - 60)
+    noteListHeight.set($mousePosition.y >= 55 && $mousePosition.y - 55)
+    // TODO now check for page size and never allow the resize bar to go past the floor!
     return;
   }
 </script>
 
-<svelte:window on:mouseup={stopResize} />
+<svelte:window on:mouseup={stopResize} on:mousemove={handleResize} />
 
-<div class="resize-bar" on:mousedown={startResize} on:mousemove={handleResize} />
-
-{$mousePosition.x},{$mousePosition.y}klkj
+<div class="resize-bar" on:mousedown={startResize} />
 
 <style>
   .resize-bar {
