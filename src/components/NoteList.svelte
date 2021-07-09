@@ -12,11 +12,32 @@
     const getNoteList = async () => {
       db$ = await db();
       db$.notes
-        .find()
+        .find({
+          selector: {
+            $or: [
+              { name: { $regex: `.*${$omniText}.*` } },
+              { body: { $regex: `.*${$omniText}.*` } }
+            ]
+          }
+        })
         .sort({ updatedAt: 'desc' })
         .$.subscribe((notes) => (noteList = notes));
     };
     getNoteList();
+  });
+
+  $: omniText.subscribe(v => {
+    db$ && db$.notes
+      .find({
+        selector: {
+          $or: [
+            { name: { $regex: `.*${v}.*` } },
+            { body: { $regex: `.*${v}.*` } }
+          ]
+        }
+      })
+    .sort({ updatedAt: 'desc' })
+    .$.subscribe((notes) => (noteList = notes))
   });
 
   // const deleteNote = async (note) => await note.remove();
@@ -40,7 +61,11 @@
   };
 </script>
 
-<ul on:mousedown={() => (isMouseDown = true)} on:mouseup={() => (isMouseDown = false)} style="height: {$noteListHeight}px">
+<ul
+  on:mousedown={() => (isMouseDown = true)}
+  on:mouseup={() => (isMouseDown = false)}
+  style="height: {$noteListHeight}px"
+>
   {#await noteList}
     Loading Notes...
   {:then results}
