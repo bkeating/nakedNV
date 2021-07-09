@@ -98,19 +98,21 @@
   }
   .icon {
     position: absolute;
-    width: 12px;
-    height: 12px;
     color: #585858;
   }
   .left {
     top: 7px;
     left: 10px;
+    width: 12px;
+    height: 12px;
   }
   .right {
     color: #adadad;
-    top: 7px;
-    right: 8px;
+    top: 8px;
+    right: 9px;
     cursor: pointer;
+    width: 14px;
+    height: 14px;
   }
   .right:hover {
     color: #9b9b9b;
