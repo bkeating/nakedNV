@@ -14,6 +14,10 @@ The goal of nakedNV is to match most of nvALT's functionality. Not all of it. Ju
 
 It's probably fair to say that if nvAux was Google Chrome, nakedNV would be it's Chromium.
 
+## Demo
+
+Want to poke at it first, like a user would? You can demo the 'latest' build [here](https://bpk-endless.s3.us-east-1.amazonaws.com/nakedNV.html). Don't keep any precious notes within this instance (read: don't consider it production-stable).
+
 ## Features
 
 Features carried over from nvALT:
