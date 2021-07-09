@@ -50,7 +50,7 @@
         on:mouseover={() => handleSelectNoteMouseOver(note)}
         style={$selectedNote === note && 'background: #0363e1; color: white;'}
       >
-        <span class="elipsis" on:dblclick={() => alert('double clicked')}>
+        <span class="elipsis" on:dblclick={() => document.getElementById('body-editor').focus()}>
           {note.name}
           {#if note.body !== ''}<span style="color: #757575">—</span>{/if}
           <span class="mute" style={$selectedNote === note && 'color: #fff;'}>
