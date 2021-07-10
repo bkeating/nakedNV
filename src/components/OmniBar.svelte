@@ -5,6 +5,8 @@
   import FaPencilAlt from 'svelte-icons/fa/FaPencilAlt.svelte';
   import IoMdCloseCircle from 'svelte-icons/io/IoMdCloseCircle.svelte';
 
+  import DownloadNotesZip from './DownloadNotesZip.svelte';
+
   import { omniMode, omniText, selectedNote, db } from '../store';
 
   let omniInput;
@@ -44,6 +46,7 @@
 
 <div class="omnibar">
   <h1>nakedNV</h1>
+  <DownloadNotesZip />
   <div class="input-wrapper">
     <div class="icon left">
       {#if $omniMode === 'search'}
