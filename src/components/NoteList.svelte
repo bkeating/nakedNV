@@ -102,7 +102,6 @@
     overflow-x: hidden;
     list-style-type: none;
     border-bottom: none;
-    user-select: none;
   }
   li {
     padding: 2px 8px;
@@ -110,6 +109,7 @@
     font-size: 12px;
     justify-content: space-between;
     font-family: Helvetica, sans-serif;
+    user-select: none;
   }
   li:nth-child(odd) {
     background: #f5f5f5;

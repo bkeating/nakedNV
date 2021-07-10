@@ -1,4 +1,3 @@
-<svelte:window on:keydown={clearSelection}/>
 
 <script>
   import { onMount } from 'svelte';
@@ -18,8 +17,8 @@
 
   const clearSelection = (e) => {
     if (e.keyCode === 27) {
-     omniText.set('');
-     omniInput.focus();
+      omniText.set('');
+      omniInput.focus();
     }
   };
 
@@ -28,7 +27,7 @@
     e.keyCode === 13 && addNote();
   };
 
-   const addNote = async () => {
+  const addNote = async () => {
     const db$ = await db();
     await db$.notes.insert({
       name: $omniText,
@@ -41,6 +40,7 @@
   };
 </script>
 
+<svelte:window on:keydown={clearSelection}/>
 
 <div class="omnibar">
   <h1>nakedNV</h1>
