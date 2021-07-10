@@ -27,7 +27,7 @@
   });
 
   $: omniText.subscribe(v => {
-    db$ && db$.notes
+    db$ && !$selectedNote && db$.notes
       .find({
         selector: {
           $or: [
