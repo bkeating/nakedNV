@@ -16,7 +16,12 @@
     omniInput.focus();
   });
 
-  const clearSelection = (e) => e.keyCode === 27 && omniText.set('');
+  const clearSelection = (e) => {
+    if (e.keyCode === 27) {
+     omniText.set('');
+     omniInput.focus();
+    }
+  };
 
   const handleTitleEnter = (e) => {
     if ($omniText === '') return;
