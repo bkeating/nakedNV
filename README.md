@@ -31,8 +31,8 @@ Features carried over from nvALT:
 Features unique to nakedNV:
 
 * Used RxDB for local note storage, can also sync to remote endpoint
-* Download your notes collection as a zip file.
-* Drag and drop zips of notes to import them.
+* Download your notes collection as a zip file
+* Drag and drop zips of notes to import them
 
 ## Development
 
