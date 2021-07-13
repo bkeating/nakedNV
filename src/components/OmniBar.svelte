@@ -6,6 +6,7 @@
   import IoMdCloseCircle from 'svelte-icons/io/IoMdCloseCircle.svelte';
 
   import DownloadNotesZip from './DownloadNotesZip.svelte';
+  import ImportNotesZip from './ImportNotesZip.svelte';
 
   import { omniMode, omniText, selectedNote, db } from '../store';
 
@@ -46,6 +47,7 @@
 
 <div class="omnibar">
   <h1>nakedNV</h1>
+  <ImportNotesZip />
   <DownloadNotesZip />
   <div class="input-wrapper">
     <div class="icon left">
