@@ -20,7 +20,7 @@
 <button on:click={handleDownloadZip}>
   <div class="icon">
     <IoMdDownload />
-  </div> Export Notes (.zip)
+  </div>
 </button>
 
 <style>

@@ -1,5 +1,7 @@
 <script>
   import JSZip from 'jszip';
+  import FaFileUpload from 'svelte-icons/fa/FaFileUpload.svelte';
+
   import { db } from '../store';
 
   let db$;
@@ -33,20 +35,26 @@
   }
 </script>
 
-<input type="file" bind:files on:change={handleImport} />
-
-<!-- {#if files && files[0]}
-  <p>
-    {files[0].name}
-  </p>
-{/if} -->
+<div>
+  <label for="file-upload">
+    <FaFileUpload />
+  </label>
+  <input id="file-upload" type="file" bind:files on:change={handleImport} />
+</div>
 
 <style>
-  input {
+  div {
     position: absolute;
-    right: 100px;
+    right: 28px;
     top: 5px;
+  }
+  input {
+    display: none;
+  }
+  label {
     display: inline-block;
-    zoom: 80%;
+    width: 12px;
+    height: 12px;
+    color: #535353;
   }
 </style>
