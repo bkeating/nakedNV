@@ -3,6 +3,7 @@ const noteSchema = {
   description: 'an individual note',
   version: 0,
   type: 'object',
+  primaryKey: 'name',
   indexes: [
     'createdAt',
     'updatedAt'
