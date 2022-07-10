@@ -1,5 +1,7 @@
 import { writable } from 'svelte/store';
-import { createRxDatabase, addRxPlugin } from 'rxdb';
+
+import { createRxDatabase } from 'rxdb';
+import { getRxStoragePouch, addPouchPlugin } from 'rxdb/plugins/pouchdb';
 import * as idb from 'pouchdb-adapter-idb';
 
 import noteSchema from './schema';
@@ -14,12 +16,16 @@ const storedNoteListHeight = localStorage.getItem('noteListHeight') || 100;
  * RxDB ========================================================================
  */
 
-addRxPlugin(idb);
+addPouchPlugin(idb);
 
 let dbPromise;
 
 const _create = async () => {
-  const db = await createRxDatabase({ name: 'nvaux', adapter: 'idb', ignoreDuplicate: true });
+  const db = await createRxDatabase({
+    name: 'nvaux',
+    storage: getRxStoragePouch('idb'),
+    ignoreDuplicate: true
+  });
   await db.addCollections({ notes: { schema: noteSchema } });
   dbPromise = db;
   return db;
