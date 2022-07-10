@@ -62,6 +62,7 @@
 </script>
 
 <ul
+  id="noteList"
   on:mousedown={() => (isMouseDown = true)}
   on:mouseup={() => (isMouseDown = false)}
   style="height: {$noteListHeight}px"
@@ -70,6 +71,7 @@
     Loading Notes...
   {:then results}
     {#each results as note}
+      <!-- svelte-ignore a11y-mouse-events-have-key-events -->
       <li
         on:click={() => handleSelectNote(note)}
         on:mouseover={() => handleSelectNoteMouseOver(note)}
